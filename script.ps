@@ -1,18 +1,22 @@
-$a = Import-Csv "Zeszyt1.csv"
+#Source of dates
+#in my example it has only one column "Date"
+$a = Import-Csv "dates.csv"
 
-$report = "Data;Wartosc"
+$report = "Date;Value"
 
 foreach($b in $a)
-
 {
-$uri = "https://wyborcza.biz/Waluty/0,112676,,,,WIBOR3M,"+$b.Data+".html"
+  #create URI using date from file
+  $uri = "https://wyborcza.biz/Waluty/0,112676,,,,WIBOR3M,"+$b.Date+".html"
+  
+  #getting web page data
+  $r = Invoke-WebRequest -Uri $uri -WebSession $session
+  
+  # finding value
+  $x = ($r.parsedhtml.getelementsbytagname("TR") |% { ( $_.children[1] | ?{ $_.tagName -eq "td"} | % innerText ) } | Select-Object -First 1)
 
-$r = Invoke-WebRequest -Uri $uri -WebSession $session
-
-$x = ($r.parsedhtml.getelementsbytagname("TR") |% { ( $_.children[1] | ?{ $_.tagName -eq "td"} | % innerText ) } | Select-Object -First 1)
-
-$report = $report + "`n"
-$report = $report + $b.Data +";"+$x
-
+  #preparing report [output data]
+  $report = $report + "`n"
+  $report = $report + $b.Date +";"+$x
 }
 $report
