@@ -1,0 +1,17 @@
+$a = Import-Csv "Zeszyt1.csv"
+
+$report = "Data;Wartosc"
+
+foreach($b in $a)
+{
+$uri = "https://wyborcza.biz/Waluty/0,112676,,,,"+$b.Data+".html"
+
+$r = Invoke-WebRequest -Uri $uri -WebSession $session
+
+$x = ($r.parsedhtml.getelementsbytagname("TR") |% { ( $_.children[1] | ?{ $_.tagName -eq "td"} | % innerText ) } | Select-Object -First 1)
+
+$report = $report + "`n"
+$report = $report + $b.Data +";"+$x
+
+}
+$report
