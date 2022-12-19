@@ -3,8 +3,9 @@ $a = Import-Csv "Zeszyt1.csv"
 $report = "Data;Wartosc"
 
 foreach($b in $a)
+
 {
-$uri = "https://wyborcza.biz/Waluty/0,112676,,,,"+$b.Data+".html"
+$uri = "https://wyborcza.biz/Waluty/0,112676,,,,WIBOR3M,"+$b.Data+".html"
 
 $r = Invoke-WebRequest -Uri $uri -WebSession $session
 
